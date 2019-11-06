@@ -9,19 +9,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using InventoryManager.Data;
+using InventoryManager.WinForms.ViewModels;
 using Newtonsoft.Json;
 
 namespace InventoryManager.WinForms
 {
     public partial class MainForm : Form
     {
-        private World World 
+        private WorldViewModel ViewModel
         {
-            get => mWorld;
-            set => mWorld = value;
+            get => mViewModel;
+            set
+            {
+                if (mViewModel != value)
+                {
+                    mViewModel = value;
+                    worldViewModelBindingSource.DataSource = mViewModel;
+                }
+            }
         }
         public MainForm() {
             InitializeComponent();
+            ViewModel = new WorldViewModel();
         }
 
         private void MainForm_Load(object sender, EventArgs e) {
@@ -36,11 +45,11 @@ namespace InventoryManager.WinForms
         {
             if(openFileDialog.ShowDialog() == DialogResult.OK) 
             {
-                World = JsonConvert.DeserializeObject<World>(File.ReadAllText(openFileDialog.FileName));
-                fileNameTextBox.Text = openFileDialog.FileName;
+                ViewModel.World = JsonConvert.DeserializeObject<World>(File.ReadAllText(openFileDialog.FileName));
+                ViewModel.Filename = openFileDialog.FileName;
             }
         }
 
-        private World mWorld;
+        private WorldViewModel mViewModel;
     }
 }
